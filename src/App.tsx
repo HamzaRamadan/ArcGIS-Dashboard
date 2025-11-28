@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MapViewComponent from "./components/MapViewComponent";
 import RightPanel from "./components/RightPanel";
 import Topbar from "./components/Navbar";
@@ -18,6 +18,31 @@ export default function App() {
     agingIndex: [],
     gdp: [],
   });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ⬅ شاشة التحميل
+  if (isLoading) {
+    return (
+      <div
+        className="h-screen w-screen flex flex-col items-center justify-center 
+      bg-gradient-to-br from-[#0B6E4F] to-[#094F3A] text-white animate-fadeIn space-y-6"
+      >
+        {/* Animated Dots */}
+        <div className="flex space-x-3">
+          <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
+          <div className="w-3 h-3 bg-white rounded-full animate-bounce delay-150"></div>
+          <div className="w-3 h-3 bg-white rounded-full animate-bounce delay-300"></div>
+        </div>
+
+        <p className="text-sm opacity-80 tracking-wide">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen bg-gray-50 overflow-auto">
@@ -28,7 +53,6 @@ export default function App() {
         onZoomClick={() => mapView?.goTo(mapLayer?.fullExtent)}
       />
 
-      {/* GRID */}
       <div
         className="
           grid 
@@ -39,7 +63,6 @@ export default function App() {
           w-full
         "
       >
-        {/* LEFT SIDE */}
         <div className="flex flex-col w-full overflow-visible lg:overflow-hidden">
           <div className="flex-1 relative w-full overflow-visible">
             <MapViewComponent
@@ -49,19 +72,16 @@ export default function App() {
             />
           </div>
 
-          {/* CHARTS – SMALL SCREENS */}
           <div className="block lg:hidden p-4 bg-white shadow rounded-b-lg overflow-visible w-full">
             <NationwideCharts chartData={chartData} />
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
         <div className="p-4 lg:pt-6 lg:pr-6 overflow-y-auto overflow-x-hidden w-full h-full">
           <RightPanel />
         </div>
       </div>
 
-      {/* CHARTS – LARGE SCREENS */}
       <div className="hidden lg:block p-4 bg-white shadow rounded-b-lg overflow-hidden w-full">
         <NationwideCharts chartData={chartData} />
       </div>
